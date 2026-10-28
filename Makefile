@@ -1,14 +1,11 @@
-# From now, we have to use the way we downloaded before, lua-internals
-
-# Run everything with "make" and "make clean"
+# WebServer C + Lua + Pallene
 CC = clang
-CFLAGS = -I/usr/local/include -Wall # Using core's API
-LDFLAGS = -L/usr/local/lib -llua -lm -Wl,-E # Linker search for liblua.a
-# I couldn't find any free and complete API as I'd like before, so 
-# let's move on and intall Pallene
-TARGET = main
+CFLAGS = -I/usr/local/include -Wall
+LDFLAGS = -L/usr/local/lib -llua -lm -Wl,-E
 
-.PHONY: all clean
+TARGET = server
+
+.PHONY: all clean run
 
 all: method.so $(TARGET)
 
@@ -19,9 +16,8 @@ method.so: method.pln
 $(TARGET): main.c
 	$(CC) main.c -o $(TARGET) $(CFLAGS) $(LDFLAGS)
 
-# All necessary code is created in C before method.so
-clean:
-	rm -f $(TARGET) method.so method.c 
-	clear
+run: all
+	LUA_CPATH="./?.so;;" LD_LIBRARY_PATH=/usr/local/lib ./$(TARGET)
 
-# Run using LUA_CPATH="./?.so;;" LD_LIBRARY_PATH=/usr/local/lib ./main
+clean:
+	rm -f $(TARGET) main method.so method.c method.d.pln
